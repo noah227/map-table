@@ -1,7 +1,6 @@
 .DS_Store
 node_modules
 *.zip
-test.*
 
 # local env files
 .env.local

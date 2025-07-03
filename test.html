@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        table {
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+        }
+    </style>
+</head>
+<body>
+<script type="module">
+    const table = document.createElement("table")
+    table.border = "1"
+
+    const thead = document.createElement("thead")
+    const rows = ["User Id", "Age", "Gender"]
+    thead.appendChild((() => {
+        const tr = document.createElement("tr")
+        tr.append(...rows.map(colName => {
+            const th = document.createElement("th")
+            th.innerText = colName
+            return th
+        }))
+        return tr
+    })())
+    table.appendChild(thead)
+
+    const tbody = document.createElement("tbody")
+    for (let i = 0; i < 10; i++) {
+        tbody.appendChild((() => {
+            const tr = document.createElement("tr")
+            const td = document.createElement("td")
+            const td1 = td.cloneNode()
+            td1.innerText = Math.random().toString(16).slice(2).toUpperCase()
+            const td2 = td.cloneNode()
+            td2.innerText = 18 + Math.floor(Math.random() * 60)
+            const td3 = td.cloneNode()
+            td3.innerText = "Private"
+            tr.append(td1, td2, td3)
+            return tr
+        })())
+    }
+    table.appendChild(tbody)
+
+    document.body.prepend(table)
+
+    const pre = document.createElement("pre")
+
+
+    import {mapTable} from "./dist/index.js";
+
+    const button = document.createElement("button")
+    button.innerText = "getDatasets"
+    button.onclick = () => {
+        console.log(mapTable("body > table"))
+        pre.innerHTML = JSON.stringify(mapTable("body > table", {headCase: "noCase"}), null, 4)
+    }
+    document.body.appendChild(button)
+
+    document.body.appendChild(pre)
+</script>
+</body>
+</html>
