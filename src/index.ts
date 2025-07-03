@@ -1,3 +1,5 @@
+import * as changeCase from "change-case"
+
 const processHeadColumns = (thead: HTMLTableSectionElement) => {
     const colsTh = thead.querySelectorAll("tr > th")
     // in case it's not standard
@@ -12,18 +14,29 @@ const processBodyRows = (tbody: HTMLTableSectionElement) => {
         return Array.from(row.querySelectorAll("td")).map(td => td.innerHTML)
     })
 }
+
 type TSelector<T> = T extends keyof HTMLElementTagNameMap ? T : string
+
+type TConfig = {
+    headCase?: Exclude<keyof typeof changeCase, "split" | "splitSeparateNumbers">
+}
+
 /**
  * Process data from standard table (no col/row span)
- * @param selector
+ * @param selector for querySelector
+ * @param config
  */
-export const mapTable = <T>(selector: TSelector<T>) => {
+export const mapTable = <T>(selector: TSelector<T>, config?: TConfig) => {
     const table = document.querySelector(selector)
     if (!table) return console.error(`No dom matched for selector: ${selector}`)
 
     let cols: string[] | undefined
     const thead: HTMLTableSectionElement | null = table.querySelector("thead")
-    if (thead) cols = processHeadColumns(thead)
+    if (thead) {
+        cols = processHeadColumns(thead)
+        const headCase = config?.headCase
+        if (headCase) cols = cols.map(col => changeCase[headCase](col))
+    }
 
     let rows: any[][] | undefined
     const tbody: HTMLTableSectionElement | null = table.querySelector("tbody")
