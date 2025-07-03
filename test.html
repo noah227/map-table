@@ -11,59 +11,146 @@
         th, td {
             padding: 12px;
         }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+        }
+
+        body {
+            padding: 28px;
+            box-sizing: border-box;
+            display: flex;
+        }
+
+        body > fieldset:nth-child(1) {
+            flex-grow: 1;
+        }
+
+        body > fieldset:nth-child(2) {
+            width: 320px;
+            flex-shrink: 0;
+        }
+
+        #table-container {
+            display: flex;
+            justify-content: space-around;
+        }
     </style>
 </head>
 <body>
+<fieldset>
+    <legend>Test Table(s)</legend>
+    <div id="table-container">
+    </div>
+    <hr>
+    <div id="map-controls">
+        <div>
+            <label for="use-config">Use Config</label>
+            <input id="use-config" type="checkbox">
+        </div>
+        <div>
+            <label for="head-case">Head Case</label>
+            <select id="head-case">
+                <option value="">---</option>
+                <option value="camelCase">camelCase</option>
+                <option value="pascalCase">pascalCase</option>
+                <option value="kebabCase">kebabCase</option>
+            </select>
+        </div>
+        <div>
+            <label for="head-map-type">Head Map Type</label>
+            <select id="head-map-type">
+                <option value="html">html</option>
+                <option value="text">text</option>
+            </select>
+        </div>
+        <div>
+            <label for="data-map-type">Data Map Type</label>
+            <select id="data-map-type">
+                <option value="html">html</option>
+                <option value="text">text</option>
+            </select>
+        </div>
+    </div>
+</fieldset>
+<fieldset>
+    <legend>Result</legend>
+    <pre id="result-pre"></pre>
+</fieldset>
 <script type="module">
-    const table = document.createElement("table")
-    table.border = "1"
-
-    const thead = document.createElement("thead")
-    const rows = ["User Id", "Age", "Gender"]
-    thead.appendChild((() => {
-        const tr = document.createElement("tr")
-        tr.append(...rows.map(colName => {
-            const th = document.createElement("th")
-            th.innerText = colName
-            return th
-        }))
-        return tr
-    })())
-    table.appendChild(thead)
-
-    const tbody = document.createElement("tbody")
-    for (let i = 0; i < 10; i++) {
-        tbody.appendChild((() => {
-            const tr = document.createElement("tr")
-            const td = document.createElement("td")
-            const td1 = td.cloneNode()
-            td1.innerText = Math.random().toString(16).slice(2).toUpperCase()
-            const td2 = td.cloneNode()
-            td2.innerText = 18 + Math.floor(Math.random() * 60)
-            const td3 = td.cloneNode()
-            td3.innerText = "Private"
-            tr.append(td1, td2, td3)
-            return tr
-        })())
-    }
-    table.appendChild(tbody)
-
-    document.body.prepend(table)
-
-    const pre = document.createElement("pre")
-
-
     import {mapTable} from "./dist/index.js";
 
-    const button = document.createElement("button")
-    button.innerText = "getDatasets"
-    button.onclick = () => {
-        console.log(mapTable("body > table"))
-        pre.innerHTML = JSON.stringify(mapTable("body > table", {headCase: "noCase"}), null, 4)
-    }
-    document.body.appendChild(button)
+    const createTable = () => {
+        const table = document.createElement("table")
+        table.className = "sample-table"
+        table.border = "1"
 
-    document.body.appendChild(pre)
+        const thead = document.createElement("thead")
+        const rows = ["User Id", "Age", "Gender"]
+        thead.appendChild((() => {
+            const tr = document.createElement("tr")
+            tr.append(...rows.map(colName => {
+                const th = document.createElement("th")
+                th.innerText = colName
+                return th
+            }))
+            return tr
+        })())
+        table.appendChild(thead)
+
+        const tbody = document.createElement("tbody")
+        for (let i = 0; i < 5; i++) {
+            tbody.appendChild((() => {
+                const tr = document.createElement("tr")
+                const td = document.createElement("td")
+                const td1 = td.cloneNode()
+                td1.innerText = Math.random().toString(16).slice(2).toUpperCase()
+                const td2 = td.cloneNode()
+                td2.innerText = 18 + Math.floor(Math.random() * 60)
+                const td3 = td.cloneNode()
+                const gender = Math.random() > .5 ? "Male" : "Female"
+                const genderDecColor = gender === "Male" ? "#6699ff" : "#ff9966"
+                td3.innerHTML = `<span style="color: ${genderDecColor}">${gender}</span>`
+                tr.append(td1, td2, td3)
+                return tr
+            })())
+        }
+        table.appendChild(tbody)
+        return table
+    }
+    const getConfig = () => {
+        if(!document.getElementById("use-config").checked) return
+        const config = {
+            headCase: document.getElementById("head-case").value || undefined,
+            headMapType: document.getElementById("head-map-type").value,
+            dataMapType: document.getElementById("data-map-type").value,
+        }
+        console.log(config)
+        return config
+    }
+    const resultPre = document.getElementById("result-pre")
+    const createButton = (index) => {
+        const button = document.createElement("button")
+        button.innerText = "mapThisTable"
+        button.onclick = () => {
+            resultPre.innerText = JSON.stringify(mapTable(`.sample-table-${index}`, getConfig()), null, 4)
+        }
+        return button
+    }
+    let all = 3
+    const tableContainer = document.getElementById("table-container")
+    while (all > 0) {
+        const div = document.createElement("div")
+        const table = createTable()
+        table.classList.add(`sample-table-${all}`)
+        div.appendChild(table)
+        div.appendChild(createButton(all))
+        tableContainer.appendChild(div)
+        console.log(all)
+        all--
+    }
 </script>
 </body>
 </html>

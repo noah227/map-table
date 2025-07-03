@@ -225,19 +225,23 @@ var changeCase = /*#__PURE__*/Object.freeze({
     trainCase: trainCase
 });
 
-const processHeadColumns = (thead) => {
+const processHeadColumns = (thead, mapType) => {
     const colsTh = thead.querySelectorAll("tr > th");
     // in case it's not standard
     const colsTd = thead.querySelectorAll("tr > td");
     const cols = colsTh.length ? colsTh : colsTd;
-    return Array.from(cols).map(item => item.innerHTML);
+    const cellGetFunction = mapType === "html" ? getDomInnerHtml : getDomInnerText;
+    return Array.from(cols).map(cellGetFunction);
 };
-const processBodyRows = (tbody) => {
+const processBodyRows = (tbody, mapType) => {
     const rows = tbody.querySelectorAll("tr");
+    const cellGetFunction = mapType === "html" ? getDomInnerHtml : getDomInnerText;
     return Array.from(rows).map(row => {
-        return Array.from(row.querySelectorAll("td")).map(td => td.innerHTML);
+        return Array.from(row.querySelectorAll("td")).map(cellGetFunction);
     });
 };
+const getDomInnerHtml = (d) => d.innerHTML;
+const getDomInnerText = (d) => d.innerText;
 /**
  * Process data from standard table (no col/row span)
  * @param selector for querySelector
@@ -250,7 +254,7 @@ const mapTable = (selector, config) => {
     let cols;
     const thead = table.querySelector("thead");
     if (thead) {
-        cols = processHeadColumns(thead);
+        cols = processHeadColumns(thead, config?.headMapType ?? "text");
         const headCase = config?.headCase;
         if (headCase)
             cols = cols.map(col => changeCase[headCase](col));
@@ -258,7 +262,7 @@ const mapTable = (selector, config) => {
     let rows;
     const tbody = table.querySelector("tbody");
     if (tbody)
-        rows = processBodyRows(tbody);
+        rows = processBodyRows(tbody, config?.dataMapType || "text");
     if (rows?.length) {
         if (!cols)
             return rows;
