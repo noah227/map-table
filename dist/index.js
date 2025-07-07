@@ -244,11 +244,11 @@ const getDomInnerHtml = (d) => d.innerHTML;
 const getDomInnerText = (d) => d.innerText;
 /**
  * Process data from standard table (no col/row span)
- * @param selector for querySelector
+ * @param selector dom or selector for querySelector
  * @param config
  */
 const mapTable = (selector, config) => {
-    const table = document.querySelector(selector);
+    const table = selector instanceof HTMLTableElement ? selector : document.querySelector(selector);
     if (!table)
         return console.error(`No dom matched for selector: ${selector}`);
     let cols;

@@ -32,11 +32,11 @@ type TMapType = "html" | "text"
 
 /**
  * Process data from standard table (no col/row span)
- * @param selector for querySelector
+ * @param selector dom or selector for querySelector
  * @param config
  */
-export const mapTable = <T>(selector: TSelector<T>, config?: TConfig) => {
-    const table = document.querySelector(selector)
+export const mapTable = <T>(selector: TSelector<T> | HTMLTableElement, config?: TConfig) => {
+    const table = selector instanceof HTMLTableElement ? selector : document.querySelector(selector)
     if (!table) return console.error(`No dom matched for selector: ${selector}`)
 
     let cols: string[] | undefined

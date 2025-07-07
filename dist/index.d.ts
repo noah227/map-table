@@ -8,10 +8,10 @@ type TConfig = {
 type TMapType = "html" | "text";
 /**
  * Process data from standard table (no col/row span)
- * @param selector for querySelector
+ * @param selector dom or selector for querySelector
  * @param config
  */
-export declare const mapTable: <T>(selector: TSelector<T>, config?: TConfig) => void | any[][] | {
+export declare const mapTable: <T>(selector: TSelector<T> | HTMLTableElement, config?: TConfig) => void | any[][] | {
     [index: string]: any;
 }[];
 export {};
